@@ -1,33 +1,50 @@
-# Chat
+# HackHunt
 
-The minimal agent-native starter app — a clean, ChatGPT-style shell with chat at
-the center, durable threads, standard app navigation, auth, live sync, and
-actions. Start here when you want a real browser app to build on without
-committing to a domain template.
+**An Agent-Native app where an AI agent scouts hackathons and bounties, scores how well each one fits you, and turns the rules into a deadline-aware submission checklist that you edit on a board.**
 
-**Live app: [chat.agent-native.com](https://chat.agent-native.com?utm_source=github&utm_medium=referral&utm_content=chat-readme)**
+Built for the [Builder.io Agent-Native Hackathon](https://www.builder.io/hackathon) (Oct 27 – Nov 9, 2026).
 
-Chat is the basic agent-native app starting point. It gives you the app-agent
-loop wired end to end and one example action, so you can add your own UI, data,
-and actions on top.
+> Work in progress. Status: data model and actions done; board UI, agent prompt, and deploy in progress.
 
-## Features
+## Why
 
-- ChatGPT-style shell with a threads list and durable chat history.
-- Auth, live sync, and application state wired out of the box.
-- The action surface the agent and UI share, plus one example action to copy.
-- A minimal, brandable base for any domain app.
+Indie builders juggle a dozen hackathons at once: each with its own timezone, prize, eligibility fine print, and submission form. Missing one field or misreading "11:59 PM PT" costs the entry. HackHunt lets the agent do the reading and the bookkeeping while you stay in control of what to pursue.
 
-## Develop locally
+## How it works
 
-Scaffold your own copy and run it:
+One set of typed actions (`actions/`) powers the board UI, the chat agent, HTTP, CLI, and MCP:
+
+| Action | What it does |
+| --- | --- |
+| `read-page` | Fetch a public listing/rules page; return text plus every date and dollar amount it mentions |
+| `save-opportunities` | Batch-add opportunities (deduped by URL) with a submission checklist |
+| `list-opportunities` | Board data, soonest deadline first, with checklist progress |
+| `get-opportunity` | One opportunity with notes and checklist |
+| `update-opportunity` | Move columns, edit prize/deadline/fit/notes |
+| `add-checklist-items` / `update-checklist-item` | Grow and tick the checklist |
+| `delete-opportunity` | Remove from the board |
+
+Deadlines are stored as UTC and shown in your local timezone with a countdown.
+
+## Run locally
 
 ```bash
-npx --yes @agent-native/core@latest create my-app --standalone --template chat
-cd my-app
-corepack enable
 pnpm install
 pnpm dev
 ```
 
-Full docs: [agent-native.com/docs/template-chat](https://agent-native.com/docs/template-chat?utm_source=github&utm_medium=referral&utm_content=chat-readme).
+Choose **Continue as local dev**. Connect an LLM (Builder.io, or a provider key such as Groq/OpenAI/Anthropic in `.env`).
+
+CLI example:
+
+```bash
+AGENT_USER_EMAIL=local@localhost pnpm action read-page --url https://www.builder.io/hackathon/rules
+```
+
+## Pre-existing work
+
+Scaffolded from the official Agent-Native Chat template (`npx @agent-native/core@0.223.0 create --standalone --template chat`). Everything under `actions/` except `hello`, `navigate`, `view-screen`, `provider-api-request`, `run`; `server/db/`, `server/lib/`, `server/plugins/db.ts`; and the board routes were written during the hackathon (from Nov 3, 2026).
+
+## License
+
+MIT © 2026 Abid Hussain
