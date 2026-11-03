@@ -18,6 +18,7 @@ export interface NavigationState {
   path?: string;
   publicPath?: string;
   threadId?: string;
+  opportunityId?: string;
 }
 
 export function useNavigationState() {
@@ -64,15 +65,19 @@ function matchesPathPrefix(pathname: string, prefix: string): boolean {
 
 export function navigationStateForPath(pathname: string): NavigationState {
   const threadId = threadIdFromPath(pathname);
+  const boardMatch = pathname.match(/^\/board\/([^/]+)/);
+  const opportunityId = boardMatch?.[1] ? decodeURIComponent(boardMatch[1]) : undefined;
   return {
     view: viewForPath(pathname),
     path: pathname,
     publicPath: appPathFromLocalRoute(pathname),
     ...(threadId ? { threadId } : {}),
+    ...(opportunityId ? { opportunityId } : {}),
   };
 }
 
 function viewForPath(pathname: string): string {
+  if (pathname.startsWith("/board")) return "board";
   if (isChatPathname(pathname)) return "chat";
   if (pathname === HOME_PATH) return "home";
   if (pathname.startsWith("/database")) return "database";
@@ -88,6 +93,8 @@ function viewForPath(pathname: string): string {
 
 function pathForView(view?: string): string {
   switch (view) {
+    case "board":
+      return "/board";
     case "chat":
     case "ask":
       return NEW_CHAT_PATH;

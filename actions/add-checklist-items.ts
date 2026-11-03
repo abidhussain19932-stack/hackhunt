@@ -30,7 +30,7 @@ export default defineAction({
         .where(and(eq(o.id, opportunityId), accessFilter(o, opportunityShares, undefined, "editor")))
         .for("update");
       if (!opp) fail("Opportunity not found.", { errorCode: "not_found", statusCode: 404 });
-      const [{ max }] = await tx
+      const [agg] = await tx
         .select({ max: sql<number>`coalesce(max(${c.position}), -1)::int` })
         .from(c)
         .where(eq(c.opportunityId, opportunityId));
@@ -39,7 +39,7 @@ export default defineAction({
         opportunityId,
         label: i.label.trim(),
         dueAt: toIso(i.dueAt, "dueAt"),
-        position: max + 1 + n,
+        position: (agg?.max ?? -1) + 1 + n,
         ownerEmail,
         orgId: opp.orgId,
       }));
