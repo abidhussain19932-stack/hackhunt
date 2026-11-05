@@ -16,6 +16,7 @@
     "agent-native:doctor": "agent-native doctor"
   },
   "dependencies": {
+    "yjs": "^13.6.33",
     "@agent-native/agentkit": "^0.223.0",
     "@agent-native/core": "0.223.0",
     "@agent-native/otel": "latest",
